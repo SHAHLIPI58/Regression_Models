@@ -26,9 +26,19 @@ X1 = imp.fit_transform(X1)
 dataset['horsepower'] = X1
 X = dataset.iloc[:,1:5].values
 
+import statsmodels.formula.api as sm
+X2 = np.append(arr = np.ones((398,1)).astype(int), values = X, axis = 1)
+X_opt= X2
+#X_opt = X1[:,[0,1,2,3,4]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+X_opt= X2[:,[0,2,3,4]]
+regressor_OLS = sm.OLS(endog = y, exog = X_opt).fit()
+regressor_OLS.summary()
+
 # Splitting the dataset into the Training set and Test set
 from sklearn.cross_validation import train_test_split
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size = 0.2, random_state = 0)
+X_train, X_test, y_train, y_test = train_test_split(X_opt, y, test_size = 0.2, random_state = 0)
 # Feature Scaling
 """from sklearn.preprocessing import StandardScaler
 sc_X = StandardScaler()
@@ -36,6 +46,9 @@ X_train = sc_X.fit_transform(X_train)
 X_test = sc_X.transform(X_test)
 sc_y = StandardScaler()
 y_train = sc_y.fit_transform(y_train)"""
+
+
+
 
 # Fitting Random Forest Regression to the dataset
 from sklearn.ensemble import RandomForestRegressor
@@ -72,7 +85,7 @@ grid_search = GridSearchCV(estimator = regressor,
                            scoring = 'r2',
                            cv = 10)
 grid_search = grid_search.fit(X_train, y_train)
-best_neg_mean_squared_error = grid_search.best_score_
+best_r2 = grid_search.best_score_
 best_parameters = grid_search.best_params_
 
 
